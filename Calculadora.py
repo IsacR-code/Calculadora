@@ -1,49 +1,62 @@
 import tkinter as tk
 
-# Função que realiza o cálculo
-def calcular(operador):
+# Função para inserir números e operadores no display
+def clicar(botao):
+    atual = entrada.get()
+    entrada.delete(0, tk.END)
+    entrada.insert(0, atual + str(botao))
+
+# Função para calcular o resultado
+def calcular():
     try:
-        numero1 = float(entrada1.get())
-        numero2 = float(entrada2.get())
-        
-        if operador == "+":
-            resultado = numero1 + numero2
-        elif operador == "-":
-            resultado = numero1 - numero2
-        elif operador == "*":
-            resultado = numero1 * numero2
-        elif operador == "/":
-            if numero2 != 0:
-                resultado = numero1 / numero2
-            else:
-                resultado = "Erro: divisão por zero"
-        else:
-            resultado = "Operação inválida"
-        
-        label_resultado.config(text=f"Resultado: {resultado}")
-    except ValueError:
-        label_resultado.config(text="Digite números válidos.")
+        resultado = eval(entrada.get())
+        entrada.delete(0, tk.END)
+        entrada.insert(0, str(resultado))
+    except:
+        entrada.delete(0, tk.END)
+        entrada.insert(0, "Erro")
 
-# Criação da janela
+# Função para limpar o display
+def limpar():
+    entrada.delete(0, tk.END)
+
+def apagar():
+    atual = entrada.get()
+    entrada.delete(0, tk.END)
+    entrada.insert(0, atual[:-1])  # remove o último caractere
+
+# Janela principal
 janela = tk.Tk()
-janela.title("Calculadora Simples")
+janela.title("Calculadora Bonita")
+janela.config(bg="#1e1e1e")
 
-# Entradas de número
-entrada1 = tk.Entry(janela)
-entrada1.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
+# Tela de entrada
+entrada = tk.Entry(janela, width=20, font=("Arial", 24), bd=5, relief=tk.RIDGE, justify="right")
+entrada.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
-entrada2 = tk.Entry(janela)
-entrada2.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+#Todo os botões
+botoes = [
+    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("/", 1, 3),
+    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("*", 2, 3),
+    ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
+    ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("+", 4, 3),
+    ("C", 5, 0), ("←", 5, 1), ("(", 5, 2), (")", 5, 3)
+]
 
-# Botões de operação
-tk.Button(janela, text="+", width=5, command=lambda: calcular("+")).grid(row=2, column=0)
-tk.Button(janela, text="-", width=5, command=lambda: calcular("-")).grid(row=2, column=1)
-tk.Button(janela, text="*", width=5, command=lambda: calcular("*")).grid(row=3, column=0)
-tk.Button(janela, text="/", width=5, command=lambda: calcular("/")).grid(row=3, column=1)
+for (texto, linha, coluna) in botoes:
+    if texto == "=":
+        comando = calcular
+    elif texto == "C":
+        comando = limpar
+    elif texto == "←":
+        comando = apagar
+    else:
+        comando = lambda t=texto: clicar(t)
+    
+    tk.Button(janela, text=texto, width=5, height=2, font=("Arial", 16), command=comando, bg="#2d2d2d", fg="white").grid(row=linha, column=coluna, padx=5, pady=5)
 
-# Label para mostrar o resultado
-label_resultado = tk.Label(janela, text="Resultado:")
-label_resultado.grid(row=4, column=0, columnspan=2, pady=10)
+# Ajustar coluna "C" para ocupar mais espaço
+janela.grid_columnconfigure(0, weight=1)
 
-# Inicia o loop da janela
+# Iniciar a interface
 janela.mainloop()
