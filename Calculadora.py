@@ -11,9 +11,16 @@ def clicar(botao):
 # Função para calcular o resultado
 def calcular():
     try:
-        resultado = eval(entrada.get())
+        expressao = entrada.get()
+        resultado = eval(expressao)
         entrada.delete(0, tk.END)
         entrada.insert(0, str(resultado))
+
+        # Adiciona ao histórico
+        historico.insert(tk.END, f"{expressao} = {resultado}")
+        # Rola automaticamente para o final
+        historico.yview(tk.END)
+
     except:
         entrada.delete(0, tk.END)
         entrada.insert(0, "Erro")
@@ -26,6 +33,9 @@ def apagar():
     atual = entrada.get()
     entrada.delete(0, tk.END)
     entrada.insert(0, atual[:-1])  # remove o último caractere
+
+def limpar_historico():
+    historico.delete(0, tk.END)
 
 def porcentagem():
     expressao = entrada.get()
@@ -65,6 +75,10 @@ janela.config(bg="#1e1e1e")
 entrada = tk.Entry(janela, width=20, font=("Arial", 24), bd=5, relief=tk.RIDGE, justify="right")
 entrada.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
+# Área de histórico (lista de resultados)
+historico = tk.Listbox(janela, height=5, font=("Arial", 14), bg="#1e1e1e", fg="white", bd=0)
+historico.grid(row=1, column=0, columnspan=4, sticky="we", padx=10, pady=(0,10))
+
 #Todo os botões
 botoes = [
     ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("/", 1, 3), # Lista com os botões da calculadora, suas posições na grade e funções associadas.
@@ -73,7 +87,7 @@ botoes = [
     ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
     ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("+", 4, 3),
     ("C", 5, 0), ("←", 5, 1), ("(", 5, 2), (")", 5, 3),
-    ("%", 6, 0)
+    ("%", 6, 0), ("HistC", 6, 1)
 ]
 
 for (texto, linha, coluna) in botoes:
@@ -85,6 +99,8 @@ for (texto, linha, coluna) in botoes:
         comando = apagar
     elif texto == "%":
         comando = porcentagem
+    elif texto == "HistC":
+        comando = limpar_historico
     else:
         comando = lambda t=texto: clicar(t)
     
