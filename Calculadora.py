@@ -1,6 +1,9 @@
 import tkinter as tk
 import re  # adicionei isso para usar expressões regulares
+import math
 
+# Variável de controle do tema
+modo_escuro = True
 
 # Função para inserir números e operadores no display
 def clicar(botao):
@@ -66,28 +69,90 @@ def porcentagem():
         entrada.delete(0, tk.END)
         entrada.insert(0, "Erro")
 
+def alternar_tema():
+    global modo_escuro
+
+    # Alterna o valor da flag
+    modo_escuro = not modo_escuro
+
+    # Define os temas
+    bg_cor = "#1e1e1e" if modo_escuro else "#f0f0f0"
+    fg_cor = "white" if modo_escuro else "black"
+    botao_bg = "#2d2d2d" if modo_escuro else "#dcdcdc"
+
+    # Atualiza fundo da janela
+    janela.config(bg=bg_cor)
+    frame_topo.config(bg=bg_cor)
+    frame_historico.config(bg=bg_cor)
+    frame_botoes.config(bg=bg_cor)
+
+    # Atualiza entrada
+    entrada.config(bg="white" if not modo_escuro else "white", fg="black", insertbackground="black")
+
+    # Atualiza histórico
+    historico.config(bg=bg_cor, fg=fg_cor)
+
+    # Atualiza botões
+    for widget in frame_botoes.winfo_children():
+        if isinstance(widget, tk.Button):
+            widget.config(bg=botao_bg, fg=fg_cor)
+
+    # Atualiza botão de tema
+    botao_tema.config(bg=botao_bg, fg=fg_cor)
+
+def raiz_quadrada():
+    try:
+        expressao = entrada.get()
+        valor = eval(expressao)
+        resultado = math.sqrt(valor)
+        entrada.delete(0, tk.END)
+        entrada.insert(0, str(resultado))
+
+        # Adiciona ao histórico
+        historico.insert(tk.END, f"√({expressao}) = {resultado}")
+        historico.yview(tk.END)
+    except:
+        entrada.delete(0, tk.END)
+        entrada.insert(0, "Erro")
+
 # Janela principal
 janela = tk.Tk()
-janela.title("Calculadora")
+janela.title("Calculadora Responsiva")
+janela.geometry("400x500")
 janela.config(bg="#1e1e1e")
 
+# Frames
+frame_topo = tk.Frame(janela, bg="#1e1e1e")
+frame_topo.pack(fill="x", padx=10, pady=(10, 5))
+
+frame_historico = tk.Frame(janela, bg="#1e1e1e")
+frame_historico.pack(fill="x", padx=10, pady=(0, 10))
+
+frame_botoes = tk.Frame(janela, bg="#1e1e1e")
+frame_botoes.pack(expand=True, fill="both", padx=10, pady=10)
+
 # Tela de entrada
-entrada = tk.Entry(janela, width=20, font=("Arial", 24), bd=5, relief=tk.RIDGE, justify="right")
-entrada.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
+entrada = tk.Entry(frame_topo, font=("Arial", 24), bd=5, relief=tk.RIDGE, justify="right")
+entrada.pack(fill="x")
 
-# Área de histórico (lista de resultados)
-historico = tk.Listbox(janela, height=5, font=("Arial", 14), bg="#1e1e1e", fg="white", bd=0)
-historico.grid(row=1, column=0, columnspan=4, sticky="we", padx=10, pady=(0,10))
+# Histórico
+historico = tk.Listbox(frame_historico, height=5, font=("Arial", 14), bg="#1e1e1e", fg="white", bd=0)
+historico.pack(fill="x")
 
-#Todo os botões
+# Botão para alternar tema
+botao_tema = tk.Button(frame_historico, text="Modo Claro/Escuro", font=("Arial", 12),
+                       command=alternar_tema, bg="#2d2d2d", fg="white")
+botao_tema.pack(pady=5)
+
+# Grade de botões
 botoes = [
-    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("/", 1, 3), # Lista com os botões da calculadora, suas posições na grade e funções associadas.
+    ("7", 0, 0), ("8", 0, 1), ("9", 0, 2), ("/", 0, 3),
+    ("4", 1, 0), ("5", 1, 1), ("6", 1, 2), ("*", 1, 3),
+    ("1", 2, 0), ("2", 2, 1), ("3", 2, 2), ("-", 2, 3),
+    ("0", 3, 0), (".", 3, 1), ("=", 3, 2), ("+", 3, 3),
+    ("C", 4, 0), ("←", 4, 1), ("(", 4, 2), (")", 4, 3),
+    ("%", 5, 0), ("HistC", 5, 1), ("√", 5, 3)
 
-    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("*", 2, 3),
-    ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
-    ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("+", 4, 3),
-    ("C", 5, 0), ("←", 5, 1), ("(", 5, 2), (")", 5, 3),
-    ("%", 6, 0), ("HistC", 6, 1)
 ]
 
 for (texto, linha, coluna) in botoes:
@@ -101,13 +166,20 @@ for (texto, linha, coluna) in botoes:
         comando = porcentagem
     elif texto == "HistC":
         comando = limpar_historico
+    elif texto == "√":
+        comando = raiz_quadrada
     else:
         comando = lambda t=texto: clicar(t)
-    
-    tk.Button(janela, text=texto, width=5, height=2, font=("Arial", 16), command=comando, bg="#2d2d2d", fg="white").grid(row=linha, column=coluna, padx=5, pady=5)
 
-# Ajustar coluna "C" para ocupar mais espaço
-janela.grid_columnconfigure(0, weight=1)
+    btn = tk.Button(frame_botoes, text=texto, font=("Arial", 16), command=comando,
+                    bg="#2d2d2d", fg="white", relief=tk.RAISED)
+    btn.grid(row=linha, column=coluna, sticky="nsew", padx=3, pady=3)
+
+# Tornar colunas e linhas expansíveis
+for i in range(6):
+    frame_botoes.rowconfigure(i, weight=1)
+for j in range(4):
+    frame_botoes.columnconfigure(j, weight=1)
 
 # Iniciar a interface
 janela.mainloop()
