@@ -1,0 +1,17 @@
+# Ignorar pastas geradas pelo PyInstaller
+build/
+dist/
+
+# Arquivo de configuração do PyInstaller
+*.spec
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos de ambiente virtual (caso use no futuro)
+.venv/
+env/
+venv/
