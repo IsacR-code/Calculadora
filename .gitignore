@@ -1,17 +1,22 @@
-# Ignorar pastas geradas pelo PyInstaller
-build/
-dist/
-
-# Arquivo de configuração do PyInstaller
-*.spec
-
-# Cache do Python
+# Ignorar arquivos compilados do Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Arquivos de ambiente virtual (caso use no futuro)
-.venv/
-env/
-venv/
+# Ignorar arquivos de cache e configurações do VSCode
+.vscode/
+
+# Ignorar arquivos de build
+build/
+dist/
+
+# Ignorar arquivos de distribuição
+*.egg-info/
+
+# Ignorar arquivos temporários do sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar arquivos de log
+*.log
