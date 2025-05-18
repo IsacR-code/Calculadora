@@ -298,6 +298,74 @@ def atualizar_destaque_botao_modo():
         botao_modo_padrao.config(relief=tk.RAISED, bg=cor_inativa_bg, fg=cor_inativa_fg)
         botao_modo_cientifica.config(relief=tk.SUNKEN, bg=cor_ativa_bg, fg=cor_ativa_fg)
 
+def inserir_pi():
+    """Insere o valor de π (Pi) no campo de entrada"""
+    entrada.delete(0, tk.END)
+    entrada.insert(0, str(math.pi))
+    
+def inserir_euler():
+    """Insere o valor de e (Número de Euler) no campo de entrada"""
+    entrada.delete(0, tk.END)
+    entrada.insert(0, str(math.e))
+
+def inverso():
+    """Calcula o inverso (1/x) do número atual"""
+    try:
+        valor_str = entrada.get()
+        if not valor_str: 
+            entrada.insert(0, "Erro")
+            return
+        valor = float(valor_str)
+        if valor == 0: 
+            entrada.delete(0, tk.END)
+            entrada.insert(0, "Erro Div/0")
+            return
+        resultado = 1 / valor
+        entrada.delete(0, tk.END)
+        entrada.insert(0, str(resultado))
+        historico.config(state=tk.NORMAL)
+        historico.insert(tk.END, f"1/{valor_str} = {resultado}\n")
+        historico.config(state=tk.DISABLED)
+        historico.see(tk.END)
+    except Exception:
+        entrada.delete(0, tk.END)
+        entrada.insert(0, "Erro 1/x")
+
+def trocar_sinal():
+    """Inverte o sinal do número atual (+/-)"""
+    try:
+        valor_str = entrada.get()
+        if not valor_str: 
+            return
+        if valor_str.startswith("-"):
+            entrada.delete(0, tk.END)
+            entrada.insert(0, valor_str[1:])
+        else:
+            entrada.delete(0, tk.END)
+            entrada.insert(0, "-" + valor_str)
+    except Exception:
+        entrada.delete(0, tk.END)
+        entrada.insert(0, "Erro +/-")
+
+def arredondar():
+    """Arredonda o número atual para o inteiro mais próximo"""
+    try:
+        valor_str = entrada.get()
+        if not valor_str: 
+            entrada.insert(0, "Erro")
+            return
+        valor = float(valor_str)
+        resultado = round(valor)
+        entrada.delete(0, tk.END)
+        entrada.insert(0, str(resultado))
+        historico.config(state=tk.NORMAL)
+        historico.insert(tk.END, f"round({valor_str}) = {resultado}\n")
+        historico.config(state=tk.DISABLED)
+        historico.see(tk.END)
+    except Exception:
+        entrada.delete(0, tk.END)
+        entrada.insert(0, "Erro round")
+
 # --- CONFIGURAÇÃO DA JANELA E WIDGETS ---
 janela = tk.Tk()
 janela.geometry("380x780") # Altura aumentada para botões de modo
